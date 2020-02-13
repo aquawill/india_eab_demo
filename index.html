@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+        integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+        crossorigin=""></script>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+        integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+    <script src="./scripts/leaflet-hash.js"></script>
+
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html,
+        body,
+        #map {
+            width: 100vw;
+            height: 100%;
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="result" style=" position: absolute; top: 80px; z-index: 1000; left: 20px; ">
+        <script type="text/javascript" charset="UTF-8">
+            document.getElementById('result').innerHTML = '';
+        </script>
+    </div>
+    <div id="map" class="map">
+        <script type="text/javascript" charset="UTF-8">
+            const he_appid = 'JDuZcEECeUBXGkFT6zp9';
+            const he_appcode = 'pTa6-IjR6ElKf0kjAolO2A';
+            const token = 'AWfLtCdBR42jOfXgI1MeMgA';
+            const IND_CA1_L20_space = {
+                name: 'IND_CA1_L20',
+                id: 'WQOzj1yC'
+            };
+            const IND_CA2_L20_space = {
+                name: 'IND_CA2_L20',
+                id: 'AuivBAyR'
+            };
+            const IND_CA3_L20_space = {
+                name: 'IND_CA3_L20',
+                id: 'm0ZELIzy'
+            };
+            const IND_CA4_L20_space = {
+                name: 'IND_CA4_L20',
+                id: 'lNX6FcJk'
+            };
+            const IND_KA_L20_space = {
+                name: 'IND_KA_L20',
+                id: 'xRfzGLBq'
+            };
+            const map = L.map('map', {
+                maxZoom: 17,
+                minZoom: 4,
+                zoomSnap: 1,
+                trackResize: true
+            });
+
+            map.setView({
+                lat: 23.765,
+                lng: 82.134
+            }, 5);
+            var hash = new L.Hash(map);
+
+            const here_basemap = L.tileLayer(
+                'https://1.base.maps.api.here.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?app_id=' +
+                he_appid + '&app_code=' + he_appcode, {
+                    maxZoom: 19,
+                    opacity: 0.8,
+                    subDomains: ['1', '2', '3'],
+                    attribution: '&copy; HERE Technlogies'
+                }).setZIndex(10).addTo(map);
+
+            const search_result_group = new L.featureGroup().setZIndex(40).addTo(map);
+
+            L.control.scale().addTo(map);
+
+            map.on('click', function () {
+                document.getElementById('result').innerHTML = '';
+                search_result_group.clearLayers();
+            });
+
+            map.on('contextmenu', function (evt) {
+                console.log(evt.latlng);
+                document.getElementById('result').innerHTML = '';
+                search_result_group.clearLayers();
+                L.marker([evt.latlng.lat, evt.latlng.lng]).addTo(search_result_group);
+                // search_eab(IND_CA1_L20_space, evt.latlng.lat, evt.latlng.lng, '#424242', 1);
+                search_eab(IND_CA2_L20_space, evt.latlng.lat, evt.latlng.lng, '#ff5733', 2);
+                search_eab(IND_CA3_L20_space, evt.latlng.lat, evt.latlng.lng, '#36ff33', 3);
+                search_eab(IND_CA4_L20_space, evt.latlng.lat, evt.latlng.lng, '#33a2ff', 4);
+                search_eab(IND_KA_L20_space, evt.latlng.lat, evt.latlng.lng, '#d800ff', 5);
+            });
+
+            function search_eab(space_id, lat, lng, color, stroke) {
+                document.getElementById("result").style.fontSize = "small";
+                document.getElementById("result").style.backgroundColor = "#ffffff";
+                document.getElementById("result").style.border = "solid #00000055";
+                const search_url = 'https://xyz.api.here.com/hub/spaces/' + space_id.id +
+                    '/spatial?access_token=' + token + '&lat=' + lat + '&lon=' + lng + '&radius=10';
+                console.log(search_url)
+                $.ajax({
+                    url: search_url,
+                    dataType: 'json',
+                    async: true,
+                    success: function (value) {
+                        L.geoJSON(value, {
+                            style: function (feature) {
+                                return {
+                                    stroke: true,
+                                    weight: stroke,
+                                    color: color,
+                                    fill: false,
+                                };
+                            }
+                        }).addTo(search_result_group);
+                        const features = value.features;
+                        console.log(features);
+                        document.getElementById('result').innerHTML += (space_id.name + '<br>');
+                        if (features.length > 0) {
+                            for (let index = 0; index < features.length; index++) {
+                                const properties = features[index].properties;
+                                for (const key in properties) {
+                                    if (properties.hasOwnProperty(key)) {
+                                        console.log(key, properties[key]);
+                                        document.getElementById('result').innerHTML += (key + ': <mark>' +
+                                            properties[
+                                                key] + '</mark><br>');
+                                    }
+                                }
+                                document.getElementById('result').innerHTML += '<br>';
+                            }
+                        } else {
+                            document.getElementById('result').innerHTML += (
+                            "Not found.<br><br>");
+                        }
+
+                    }
+                })
+            }
+        </script>
+    </div>
+</body>
