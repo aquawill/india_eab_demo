@@ -34,14 +34,17 @@
 <body>
     <div id="result" style=" position: absolute; top: 80px; z-index: 1000; left: 20px; ">
         <script type="text/javascript" charset="UTF-8">
-            document.getElementById('result').innerHTML = '';
+            document.getElementById("result").style.fontSize = "small";
+            document.getElementById("result").style.backgroundColor = "#ffffff";
+            document.getElementById("result").style.border = "solid #00000055";
+            document.getElementById('result').innerHTML = 'Right Click To Check India EAB.';
         </script>
     </div>
     <div id="map" class="map">
         <script type="text/javascript" charset="UTF-8">
             const he_appid = 'JDuZcEECeUBXGkFT6zp9';
             const he_appcode = 'pTa6-IjR6ElKf0kjAolO2A';
-            const token = 'AWfLtCdBR42jOfXgI1MeMgA';
+            const token = 'AE8ADyyPTci2JQI6lA0YCAA';
             const IND_CA1_L20_space = {
                 name: 'IND_CA1_L20',
                 id: 'WQOzj1yC'
@@ -89,7 +92,7 @@
             L.control.scale().addTo(map);
 
             map.on('click', function () {
-                document.getElementById('result').innerHTML = '';
+                document.getElementById('result').innerHTML = 'Right Click To Check India EAB.';
                 search_result_group.clearLayers();
             });
 
@@ -106,9 +109,7 @@
             });
 
             function search_eab(space_id, lat, lng, color, stroke) {
-                document.getElementById("result").style.fontSize = "small";
-                document.getElementById("result").style.backgroundColor = "#ffffff";
-                document.getElementById("result").style.border = "solid #00000055";
+
                 const search_url = 'https://xyz.api.here.com/hub/spaces/' + space_id.id +
                     '/spatial?access_token=' + token + '&lat=' + lat + '&lon=' + lng + '&radius=10';
                 console.log(search_url)
@@ -145,7 +146,7 @@
                             }
                         } else {
                             document.getElementById('result').innerHTML += (
-                            "Not found.<br><br>");
+                                "Not found.<br><br>");
                         }
 
                     }
