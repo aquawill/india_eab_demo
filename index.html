@@ -123,7 +123,7 @@
 
                 const search_url = 'https://xyz.api.here.com/hub/spaces/' + space_id.id +
                     '/spatial?access_token=' + token + '&lat=' + lat + '&lon=' + lng + '&radius=10';
-                console.log(search_url)
+                console.log(search_url);
                 $.ajax({
                     url: search_url,
                     dataType: 'json',
@@ -140,14 +140,12 @@
                             }
                         }).addTo(search_result_group);
                         const features = value.features;
-                        console.log(features);
                         document.getElementById('result').innerHTML += (space_id.name + '<br>');
                         if (features.length > 0) {
                             for (let index = 0; index < features.length; index++) {
                                 const properties = features[index].properties;
                                 for (const key in properties) {
                                     if (properties.hasOwnProperty(key)) {
-                                        console.log(key, properties[key]);
                                         document.getElementById('result').innerHTML += (key + ': <mark>' +
                                             properties[
                                                 key] + '</mark><br>');
